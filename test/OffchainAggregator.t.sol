@@ -12,13 +12,13 @@ contract OffchainAggregatorTest is Test {
     }
 
     function test_transmit() public {
-        uint80 roundId = 10543;
+        uint80 roundId = 110680464442257320685;
         aggregator.transmit(
           roundId,
           3986495534369,
           1706190947
         );
         console2.log(aggregator.latestRound());
-        assertEq(aggregator.latestRound(), roundId);
+        assertEq(aggregator.latestRound(), roundId & 0xFFFFFFFFFFFFFFFF);
     }
 }

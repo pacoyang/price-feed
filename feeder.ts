@@ -12,12 +12,28 @@ const mainnetFeedContracts = {
 }
 
 const aggregatorContracts = {
-  'ETH-USD': '0xA3C7DbCC80256AcFef360b7Bf25E1428E523468E',
+  'ETH-USD': '0x2E246850207295e3676990b5c681351D8AE700cf',
 }
 
 const abi = parseAbi([
   'function latestRoundData() external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)',
+  'function transmit(uint80 _roundId, int192 _answer, uint64 _timestamp) external',
+  'function getRoundData(uint80 _roundId) public view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)',
 ])
+
+// tanssi dancebox
+const chain = defineChain({
+  id: 5678,
+  name: 'dancebox-evm-container',
+  rpcUrls: {
+    default: {
+      http: ['https://fraa-dancebox-3001-rpc.a.dancebox.tanssi.network'],
+    },
+    public: {
+      http: ['https://fraa-dancebox-3001-rpc.a.dancebox.tanssi.network'],
+    }
+  }
+})
 
 const publicClient = createPublicClient({
   chain: mainnet,
@@ -37,6 +53,26 @@ async function getLatestRoundData(pair: string) {
   return data
 }
 
+async function getRoundDataFromAggregator(pair: string, roundId: number) {
+  const address = aggregatorContracts[pair]
+  if (!address) {
+    throw new Error(`${pair} aggregator contract did not exist.`)
+  }
+  const publicClient = createPublicClient({
+    chain,
+    transport: http()
+  })
+  try {
+    const data = await publicClient.readContract({
+      address,
+      abi,
+      functionName: 'getRoundData',
+      args: [roundId]
+    })
+    return data
+  } catch {}
+}
+
 async function main() {
   if (!process.env.PRIVATE_KEY) {
     throw new Error('missing process.env.PRIVATE_KEY')
@@ -46,20 +82,14 @@ async function main() {
     throw new Error(`${pair} aggregator contract did not exist.`)
   }
   const [roundId, answer, startedAt, updatedAt, answeredInRound] = await getLatestRoundData(pair)
+  const aggregatorRoundId = Number(roundId & BigInt('0xFFFFFFFFFFFFFFFF'))
+  const data = await getRoundDataFromAggregator(pair, aggregatorRoundId)
+  if (data[1] === answer) {
+    console.info(`aggregatorRoundId ${aggregatorRoundId} data exists: ${data}`)
+    return
+  }
+
   const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`)
-  // tanssi dancebox
-  const chain = defineChain({
-    id: 5678,
-    name: 'dancebox-evm-container',
-    rpcUrls: {
-      default: {
-        http: ['https://fraa-dancebox-3001-rpc.a.dancebox.tanssi.network'],
-      },
-      public: {
-        http: ['https://fraa-dancebox-3001-rpc.a.dancebox.tanssi.network'],
-      }
-    }
-  })
   const walletClient = createWalletClient({
     chain,
     transport: http(),
@@ -67,9 +97,7 @@ async function main() {
   })
   const hash = await walletClient.writeContract({
     address: aggregatorContracts[pair],
-    abi: parseAbi([
-      'function transmit(uint80 _roundId, int192 _answer, uint64 _timestamp) external'
-    ]),
+    abi,
     functionName: 'transmit',
     args: [roundId, answer, startedAt]
   })
