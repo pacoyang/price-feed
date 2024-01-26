@@ -27,7 +27,7 @@ Firstly, you need to deploy the `OffchainAggregator` contract for a price feed, 
 yarn deploy
 ```
 
-Then update the `aggregatorContracts` in the `feeder.ts` file, Update the deployed contract address to the corresponding pair aggregator address.
+Then update the `aggregatorContracts` in the `feeder.ts` file, update the deployed contract address to the corresponding pair aggregator address.
 
 ### Trigger price feed update
 
