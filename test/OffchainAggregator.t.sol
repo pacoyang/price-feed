@@ -8,7 +8,10 @@ contract OffchainAggregatorTest is Test {
     OffchainAggregator public aggregator;
 
     function setUp() public {
-        aggregator = new OffchainAggregator();
+        aggregator = new OffchainAggregator(
+          8,
+          'AAVE / USD'
+        );
     }
 
     function test_transmit() public {

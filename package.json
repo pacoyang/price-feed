@@ -1,6 +1,7 @@
 {
   "name": "price-feed",
   "version": "1.0.0",
+  "private": true,
   "dependencies": {
     "dotenv": "^16.4.1",
     "viem": "^2.5.0"
@@ -8,6 +9,7 @@
   "scripts": {
     "build": "forge build",
     "test": "forge test",
-    "deploy": "source .env && forge script script/OffchainAggregator.s.sol:OffchainAggregatorScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast"
+    "deploy": "source .env && forge script script/OffchainAggregator.s.sol:OffchainAggregatorScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast",
+    "verify": "source .env && forge verify-contract --chain-id 5678 --verifier blockscout --verifier-url $VERIFIER_URL $VERIFY_ADDRESS src/OffchainAggregator.sol:OffchainAggregator --show-standard-json-input"
   }
 }

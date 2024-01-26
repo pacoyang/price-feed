@@ -9,7 +9,11 @@ contract OffchainAggregatorScript is Script {
 
     function run() public {
         vm.startBroadcast();
-        OffchainAggregator aggregator = new OffchainAggregator();
+        OffchainAggregator aggregator = new OffchainAggregator(
+          8,
+          'USDC / USD'
+        );
+        console2.log(address(aggregator));
         vm.stopBroadcast();
     }
 }

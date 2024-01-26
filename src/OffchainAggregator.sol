@@ -34,6 +34,14 @@ contract OffchainAggregator is Owned, AggregatorV2V3Interface {
   }
   mapping(uint32 /* aggregator round ID */ => Transmission) internal s_transmissions;
 
+  constructor(
+    uint8 _decimals,
+    string memory _description
+  ) {
+    decimals = _decimals;
+    s_description = _description;
+  }
+
   /*
    * v2 Aggregator interface
    */
