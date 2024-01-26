@@ -1,0 +1,13 @@
+{
+  "name": "price-feed",
+  "version": "1.0.0",
+  "dependencies": {
+    "dotenv": "^16.4.1",
+    "viem": "^2.5.0"
+  },
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test",
+    "deploy": "source .env && forge script script/OffchainAggregator.s.sol:OffchainAggregatorScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast"
+  }
+}

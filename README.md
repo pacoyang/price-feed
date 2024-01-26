@@ -1,66 +1,40 @@
-## Foundry
-
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
-
-Foundry consists of:
-
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
+# Price Feed
 
 ## Usage
 
-### Build
+### Setup
 
-```shell
-$ forge build
+```bash
+# Install deps
+yarn install
+
+# Fill your wallet private key in the .env file
+cp env.example .env
 ```
 
-### Test
+### Build and test
 
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
+```bash
+yarn build
+yarn test
 ```
 
 ### Deploy
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+Firstly, you need to deploy the `OffchainAggregator` contract for a price feed, such as the ETH/USD pair.
+
+```bash
+yarn deploy
 ```
 
-### Cast
+Then update the `aggregatorContracts` in the `feeder.ts` file, Update the deployed contract address to the corresponding pair aggregator address.
 
-```shell
-$ cast <subcommand>
-```
+### Trigger price feed update
 
-### Help
+```bash
+bun feeder.ts
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+# Or
+
+npx tsx feeder.ts
 ```
